@@ -32,7 +32,7 @@ export default function Login() {
 
   return (
     <main>
-      <h1>Login</h1>
+      <h1 className="font-light">Login</h1>
       <form onSubmit={onSubmit}>
         <input type="text" {...register("username")} />
         {errors.username && <div>{errors.username.message}</div>}
