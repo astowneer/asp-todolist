@@ -5,9 +5,11 @@ import {
   AppPath,
   DataStatus,
   StorageKey,
+  ToastNotifications,
   type LoginUserDto,
 } from "../../../common/common";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export function useLogin(reset?: () => void) {
   const navigate = useNavigate();
@@ -19,8 +21,13 @@ export function useLogin(reset?: () => void) {
     if (token && status === DataStatus.FULFILLED) {
       localStorage.setItem(StorageKey.ACCESS_TOKEN, token.accessToken);
       sessionStorage.setItem(StorageKey.REFRESH_TOKEN, token.accessToken);
+
+      toast.success(ToastNotifications.AUTHENTICATION_SUCCESS);
+
       navigate(AppPath.ROOT);
       reset?.();
+    } else if (status === DataStatus.REJECTED) {
+      toast.error(ToastNotifications.AUTHENTICATION_FAILED);
     }
   }, [token, status]);
 

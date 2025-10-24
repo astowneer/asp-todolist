@@ -4,9 +4,11 @@ import { actions } from "../../../store/auth/auth";
 import {
   AppPath,
   DataStatus,
+  ToastNotifications,
   type RegisterUserDto,
 } from "../../../common/common";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export function useRegister(reset?: () => void) {
   const navigate = useNavigate();
@@ -17,6 +19,8 @@ export function useRegister(reset?: () => void) {
     if (status === DataStatus.FULFILLED) {
       navigate(AppPath.LOGIN);
       reset?.();
+    } else if (status === DataStatus.REJECTED) {
+      toast.error(ToastNotifications.AUTHENTICATION_FAILED);
     }
   }, [status]);
 
