@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using TodoList.Core.Data;
+using TodoList.Core.Entities.Models;
 using TodoList.Core.Service.Contracts;
 using TodoList.Core.Services;
 
@@ -10,6 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<UserDbContext>(opt =>
     opt.UseInMemoryDatabase("UserDb"));
+builder.Services.AddDbContext<TodoDbContext>(opt =>
+    opt.UseInMemoryDatabase("TodoDb"));
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
