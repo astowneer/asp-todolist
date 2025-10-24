@@ -5,7 +5,7 @@ type RegisterUserDto = {
   password: string;
 };
 
-export const register = (user: RegisterUserDto) =>
+export const registerAction = (user: RegisterUserDto) =>
   fetch(`${baseUrl}/api/auth/register`, {
     method: "POST",
     headers: {
