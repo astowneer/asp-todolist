@@ -1,14 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loadTodoList } from "./actions";
+import { createTodoItem, loadTodoList } from "./actions";
 import { DataStatus, type TodoItemDto, type ValueOf } from "@/common/common";
 
 type State = {
   todoList: TodoItemDto[] | null;
+  todoItem: TodoItemDto | null;
   status: ValueOf<typeof DataStatus>;
 };
 
 const initialState: State = {
   todoList: null,
+  todoItem: null,
   status: DataStatus.IDLE,
 };
 
@@ -25,6 +27,16 @@ const { reducer, actions, name } = createSlice({
         state.status = DataStatus.FULFILLED;
       }),
       builder.addCase(loadTodoList.rejected, (state) => {
+        state.status = DataStatus.REJECTED;
+      });
+    builder.addCase(createTodoItem.pending, (state) => {
+      state.status = DataStatus.PENDING;
+    }),
+      builder.addCase(createTodoItem.fulfilled, (state, action) => {
+        state.todoItem = action.payload;
+        state.status = DataStatus.FULFILLED;
+      }),
+      builder.addCase(createTodoItem.rejected, (state) => {
         state.status = DataStatus.REJECTED;
       });
   },

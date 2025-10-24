@@ -3,6 +3,7 @@ import {
   ApiPath,
   ContentType,
   HttpMethods,
+  type TodoItemCreateDto,
   type TodoItemDto,
 } from "@/common/common";
 import type { Http } from "./http.service";
@@ -29,6 +30,21 @@ class TodoList {
     return this.http.load(this.getUrl(ApiEndpoints.ROOT), {
       method: HttpMethods.GET,
       contentType: ContentType.JSON,
+      authToken,
+    });
+  }
+
+  public create({
+    authToken,
+    payload,
+  }: {
+    authToken: string;
+    payload: TodoItemCreateDto;
+  }): Promise<TodoItemDto> {
+    return this.http.load(this.getUrl(ApiEndpoints.ROOT), {
+      method: HttpMethods.POST,
+      contentType: ContentType.JSON,
+      payload: JSON.stringify(payload),
       authToken,
     });
   }

@@ -1,7 +1,7 @@
-import type { TodoItemDto } from "@/common/common";
+import type { TodoItemCreateDto, TodoItemDto } from "@/common/common";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { useAppSelector } from "@/hooks/use-app-selector";
-import { loadTodoList } from "@/store/todo-list/actions";
+import { createTodoItem, loadTodoList } from "@/store/todo-list/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,11 +25,9 @@ export function TodoList() {
     formState: { errors },
   } = useForm({ resolver: zodResolver(todoItemSchema) });
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-
-  const handleAdd = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmit = (data: TodoItemCreateDto) => {
+    dispatch(createTodoItem(data));
+    reset();
   };
 
   const handleDelete = (id: string) => {};
@@ -48,7 +46,7 @@ export function TodoList() {
     <main className="bg-yellow-500">
       <h1>Todos</h1>
       <section>
-        <form onSubmit={handleAdd}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
             {...register("name")}
