@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +14,7 @@ namespace TodoList.Core.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoItemsController : ControllerBase
+    public class TodoItemsController : ProtectedController
     {
         private readonly TodoDbContext _context;
 
@@ -21,10 +23,16 @@ namespace TodoList.Core.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItems()
         {
-            return await _context.TodoItems.Select(x => ItemToDto(x)).ToListAsync();
+            var userTodos = await _context.TodoItems
+                .Where(t => t.UserId == UserId)
+                .Select(x => ItemToDto(x))
+                .ToListAsync();
+
+            return Ok(userTodos);
         }
 
         [HttpGet("{id}")]
@@ -35,6 +43,11 @@ namespace TodoList.Core.Controllers
             if (todoItem == null)
             {
                 return NotFound();
+            }
+
+            if (todoItem.UserId != UserId)
+            {
+                return Forbid();
             }
 
             return ItemToDto(todoItem);
@@ -52,6 +65,11 @@ namespace TodoList.Core.Controllers
             if (todoItem == null)
             {
                 return NotFound();
+            }
+
+            if (todoItem.UserId != UserId)
+            {
+                return Forbid();
             }
 
             if (request.Name != null) todoItem.Name = request.Name;
@@ -85,7 +103,7 @@ namespace TodoList.Core.Controllers
             todoItem.Name = request.Name;
             todoItem.Description = request.Description;
             todoItem.IsCompleted = request.IsCompleted;
-            todoItem.UserId = request.UserId;
+            todoItem.UserId = UserId;
 
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
@@ -100,6 +118,11 @@ namespace TodoList.Core.Controllers
             if (todoItem == null)
             {
                 return NotFound();
+            }
+
+            if (todoItem.UserId != UserId)
+            {
+                return Forbid();
             }
 
             _context.TodoItems.Remove(todoItem);

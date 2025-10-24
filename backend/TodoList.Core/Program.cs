@@ -1,5 +1,7 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.IdentityModel.Tokens;
 using TodoList.Core.Data;
 using TodoList.Core.Entities.Models;
 using TodoList.Core.Service.Contracts;
@@ -14,6 +16,17 @@ builder.Services.AddDbContext<UserDbContext>(opt =>
 builder.Services.AddDbContext<TodoDbContext>(opt =>
     opt.UseInMemoryDatabase("TodoDb"));
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+    options.TokenValidationParameters = new TokenValidationParameters
+{
+    ValidateIssuer = true,
+    ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+    ValidateAudience = true,
+    ValidAudience = builder.Configuration["AppSettings:Audience"],
+    ValidateLifetime = true,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+    ValidateIssuerSigningKey = true,
+});
 
 var app = builder.Build();
 
@@ -27,6 +40,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
