@@ -1,42 +1,48 @@
-import { useState } from "react";
+import type { TodoItemDto } from "@/common/common";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { useAppSelector } from "@/hooks/use-app-selector";
+import { loadTodoList } from "@/store/todo-list/actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import z from "zod";
 
-type TodoItem = {
-  id: string;
-  name: string;
-  description: string;
-  isCompleted: boolean;
-};
+const todoItemSchema = z.object({
+  name: z
+    .string({
+      error: "Name is required",
+    })
+    .min(5, "Username should be at least 5 characters"),
+  description: z.string(),
+  isCompleted: z.boolean().default(false),
+});
 
 export function TodoList() {
-  const [todoList, setTodoList] = useState<TodoItem[]>([]);
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(todoItemSchema) });
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
   const handleAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    setTodoList([
-      ...todoList,
-      { id: Date.now().toString(), name, isCompleted: false, description },
-    ]);
-
-    setName("");
-    setDescription("");
   };
 
-  const handleDelete = (id: string) => {
-    setTodoList((prev) => prev.filter((todoItem) => todoItem.id !== id));
-  };
+  const handleDelete = (id: string) => {};
 
-  const handleCompled = (id: string) => {
-    setTodoList((prev) =>
-      prev.map((todoItem) =>
-        todoItem.id === id
-          ? { ...todoItem, isCompleted: !todoItem.isCompleted }
-          : todoItem
-      )
-    );
-  };
+  const handleCompled = (id: string) => {};
+
+  const todoList = useAppSelector((state) => state.todoList.todoList);
+  const status = useAppSelector((state) => state.todoList.status);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(loadTodoList());
+  }, [dispatch]);
 
   return (
     <main className="bg-yellow-500">
@@ -45,21 +51,19 @@ export function TodoList() {
         <form onSubmit={handleAdd}>
           <input
             type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
+            {...register("name")}
             className="border-2 border-black"
           />
           <input
             type="text"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
+            {...register("description")}
             className="border-2 border-black"
           />
           <button type="submit">add</button>
         </form>
       </section>
       <section>
-        {todoList.map((todoItem) => (
+        {todoList?.map((todoItem) => (
           <div key={todoItem.id}>
             <label htmlFor={`todo-${todoItem.id}`}>
               <input
