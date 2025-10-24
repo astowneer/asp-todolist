@@ -65,7 +65,7 @@ export function LoginForm() {
           )}
         />
         <Button disabled={isPending} type="submit">
-          Зарегистрироваться
+          Register
         </Button>
       </form>
     </Form>

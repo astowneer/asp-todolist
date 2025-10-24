@@ -84,7 +84,7 @@ export function RegisterForm() {
           )}
         />
         <Button disabled={isPending} type="submit">
-          Зарегистрироваться
+          Register
         </Button>
       </form>
     </Form>
