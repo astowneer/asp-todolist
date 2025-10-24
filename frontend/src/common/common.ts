@@ -18,4 +18,7 @@ export {
   type RegisterUserResponse,
   type LoginUserDto,
   type LoginUserResponseDto,
+  type TodoItemDto,
+  type TodoItemCreateDto,
+  type TodoItemUpdateDto,
 } from "./types/types";
