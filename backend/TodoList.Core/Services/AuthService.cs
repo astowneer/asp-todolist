@@ -14,6 +14,23 @@ namespace TodoList.Core.Services;
 
 public class AuthService(UserDbContext context) : IAuthService
 {
+  public async Task<User?> LoginAsync(LoginUserDto request)
+  {
+    var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+
+    if (user is null)
+    {
+      return null;
+    }
+
+    if (new PasswordHasher<User>().VerifyHashedPassword(user, user.PasswordHash, request.Password) == PasswordVerificationResult.Failed)
+    {
+      return null;
+    }
+
+    return user;
+  }
+
   public async Task<User?> RegisterAsync(RegisterUserDto request)
   {
     if (await context.Users.AnyAsync(u => u.Username == request.Username))
