@@ -1,9 +1,7 @@
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerAction } from "../../actions/auth";
-import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
-import { actions } from "../../../store/auth/auth";
+import { useRegister } from "./use-register";
 
 const registerSchema = z
   .object({
@@ -24,35 +22,33 @@ const registerSchema = z
     message: "Password didn't match",
   });
 
-type RegisterUser = z.infer<typeof registerSchema>;
-
 export default function Register() {
   const {
     reset,
-    register,
     handleSubmit,
+    register,
     formState: { errors },
-  } = useForm<RegisterUser>({ resolver: zodResolver(registerSchema) });
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+  });
 
-  const dispatch = useAppDispatch();
+  const { isPending, handleRegister } = useRegister(reset);
 
-  const onSubmit = async (data: RegisterUser) => {
-    const user = { username: data.username, password: data.password };
-    await dispatch(actions.register(user));
-    reset();
-  };
+  const onSubmit = handleSubmit(handleRegister);
 
   return (
     <main>
       <h1>Register</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <input type="text" {...register("username")} />
         {errors.username && <div>{errors.username.message}</div>}
         <input type="text" {...register("password")} />
         {errors.password && <div>{errors.password.message}</div>}
         <input type="text" {...register("confirmPassword")} />
         {errors.confirmPassword && <div>{errors.confirmPassword.message}</div>}
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={isPending}>
+          Submit
+        </button>
       </form>
       <span>
         Don't have an account?
