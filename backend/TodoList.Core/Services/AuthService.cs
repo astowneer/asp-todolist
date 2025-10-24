@@ -28,13 +28,7 @@ public class AuthService(UserDbContext context, IConfiguration configuration) : 
       return null;
     }
 
-    var tokenResponse = new TokenResponseDto
-    {
-      User = user,
-      AccessToken = CreateToken(user)
-    };
-
-    return tokenResponse;
+    return await CreateTokenResponse(user);
   }
 
   public async Task<User?> RegisterAsync(RegisterUserDto request)
@@ -78,5 +72,57 @@ public class AuthService(UserDbContext context, IConfiguration configuration) : 
     );
 
     return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+  }
+
+  private string GenerateRefreshToken()
+  {
+    var randomNumber = new byte[32];
+    using var rng = RandomNumberGenerator.Create();
+    rng.GetBytes(randomNumber);
+    return Convert.ToBase64String(randomNumber);
+  }
+
+  private async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
+  {
+    var refreshToken = GenerateRefreshToken();
+    user.RefreshToken = refreshToken;
+    user.RefreshTokenExpireTime = DateTime.UtcNow.AddDays(7);
+    await context.SaveChangesAsync();
+    return refreshToken;
+  }
+
+  private async Task<User?> ValidateRefreshTokenAsync(int userId, string refreshToken)
+  {
+    var user = await context.Users.FindAsync(userId);
+
+    if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpireTime <= DateTime.UtcNow)
+    {
+      return null;
+    }
+
+    return user;
+  }
+
+  public async Task<TokenResponseDto> CreateTokenResponse(User user)
+  {
+    var response = new TokenResponseDto
+    {
+      AccessToken = CreateToken(user),
+      RefreshToken = await GenerateAndSaveRefreshTokenAsync(user)
+    };
+
+    return response;
+  }
+
+  public async Task<TokenResponseDto?> RefreshTokenAsync(TokenRefreshDto request)
+  {
+    var user = await ValidateRefreshTokenAsync(request.UserId, request.RefreshToken);
+
+    if (user is null)
+    {
+      return null;
+    }
+
+    return await CreateTokenResponse(user);
   }
 }
