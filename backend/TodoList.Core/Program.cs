@@ -11,11 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
 builder.Services.AddDbContext<UserDbContext>(opt =>
     opt.UseInMemoryDatabase("UserDb"));
 builder.Services.AddDbContext<TodoDbContext>(opt =>
     opt.UseInMemoryDatabase("TodoDb"));
+
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITodoListService, TodoListService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
     options.TokenValidationParameters = new TokenValidationParameters
 {

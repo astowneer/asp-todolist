@@ -9,140 +9,63 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoList.Core.Entities.Dtos;
 using TodoList.Core.Entities.Models;
+using TodoList.Core.Service.Contracts;
 
 namespace TodoList.Core.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoItemsController : ProtectedController
+    public class TodoItemsController(ITodoListService todoService) : ProtectedController
     {
-        private readonly TodoDbContext _context;
-
-        public TodoItemsController(TodoDbContext context)
-        {
-            _context = context;
-        }
-
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItems()
-        {
-            var userTodos = await _context.TodoItems
-                .Where(t => t.UserId == UserId)
-                .Select(x => ItemToDto(x))
-                .ToListAsync();
-
-            return Ok(userTodos);
-        }
+            => Ok(await todoService.GetTodosAsync(UserId));
 
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoItemDto>> GetTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var todoItem = await todoService.GetTodoByIdAsync(id, UserId);
 
             if (todoItem == null)
-            {
-                return NotFound();
-            }
-
-            if (todoItem.UserId != UserId)
             {
                 return Forbid();
             }
 
-            return ItemToDto(todoItem);
+            return Ok(todoItem);
         }
 
         [HttpPatch("{id}")]
         public async Task<ActionResult<TodoItemDto>> PatchTodoItem(long id, TodoItemUpdateDto request)
         {
-            if (id != request.Id)
-            {
-                return BadRequest();
-            }
+            var todoItem = await todoService.UpdateTodoAsync(id, request, UserId);
 
-            var todoItem = await _context.TodoItems.FindAsync(id);
             if (todoItem == null)
-            {
-                return NotFound();
-            }
-
-            if (todoItem.UserId != UserId)
             {
                 return Forbid();
             }
 
-            if (request.Name != null) todoItem.Name = request.Name;
-            if (request.Description != null) todoItem.Description = request.Description;
-            if (request.IsCompleted.HasValue) todoItem.IsCompleted = request.IsCompleted.Value;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TodoItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Ok(ItemToDto(todoItem));
+            return Ok(todoItem);
         }
 
         [HttpPost]
         public async Task<ActionResult<TodoItemDto>> PostTodoItem(TodoItemCreateDto request)
         {
-            var todoItem = new TodoItem();
+            var todoItem = await todoService.CreateTodoAsync(request, UserId);
 
-            todoItem.Name = request.Name;
-            todoItem.Description = request.Description;
-            todoItem.IsCompleted = request.IsCompleted;
-            todoItem.UserId = UserId;
-
-            _context.TodoItems.Add(todoItem);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
+            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTodoItem(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
-            if (todoItem == null)
-            {
-                return NotFound();
-            }
+            var deleted = await todoService.DeleteTodoAsync(id, UserId);
 
-            if (todoItem.UserId != UserId)
+            if (!deleted)
             {
                 return Forbid();
             }
 
-            _context.TodoItems.Remove(todoItem);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
-
-        private bool TodoItemExists(long id)
-        {
-            return _context.TodoItems.Any(e => e.Id == id);
-        }
-
-        private static TodoItemDto ItemToDto(TodoItem todoItem) =>
-            new TodoItemDto
-            {
-                Id = todoItem.Id,
-                Name = todoItem.Name,
-                IsCompleted = todoItem.IsCompleted,
-                UserId = todoItem.UserId
-            };
     }
 }
