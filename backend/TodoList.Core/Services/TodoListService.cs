@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoList.Core.Entities.Dtos;
 using TodoList.Core.Entities.Models;
@@ -71,6 +72,22 @@ public class TodoListService(TodoDbContext context) : ITodoListService
     await context.SaveChangesAsync();
 
     return true;
+  }
+
+  public async Task<IEnumerable<TodoItemDto>> GetTodoItemsByStatusAsync(bool? isCompleted, int userId)
+  {
+    var query = context.TodoItems.Where(t => t.UserId == userId);
+
+    if (isCompleted.HasValue)
+    {
+      query = query.Where(t => t.IsCompleted == isCompleted.Value);
+    }
+
+    var filteredTodos = await query
+        .Select(x => ToDto(x))
+        .ToListAsync();
+
+    return filteredTodos;
   }
 
   private static TodoItemDto ToDto(TodoItem todo) =>

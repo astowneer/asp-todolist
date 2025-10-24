@@ -67,5 +67,13 @@ namespace TodoList.Core.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItems([FromQuery] bool? isCompleted)
+        {
+            var todoList = await todoService.GetTodoItemsByStatusAsync(isCompleted, UserId);
+
+            return Ok(todoList);
+        }
     }
 }
