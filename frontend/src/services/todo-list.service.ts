@@ -65,6 +65,20 @@ class TodoList {
     });
   }
 
+  public delete({
+    authToken,
+    id,
+  }: {
+    authToken: string;
+    id: number;
+  }): Promise<TodoItemDto> {
+    return this.http.load(this.getUrl(`${ApiEndpoints.ROOT}${id}`), {
+      method: HttpMethods.DELETE,
+      contentType: ContentType.JSON,
+      authToken,
+    });
+  }
+
   private getUrl(path = ""): string {
     return `${this.baseUrl}/${this.basePath}/${path}`;
   }

@@ -1,5 +1,10 @@
 import { createSlice, isAnyOf } from "@reduxjs/toolkit";
-import { createTodoItem, loadTodoList, updateTodoItem } from "./actions";
+import {
+  createTodoItem,
+  deleteTodoItem,
+  loadTodoList,
+  updateTodoItem,
+} from "./actions";
 import { DataStatus, type TodoItemDto, type ValueOf } from "@/common/common";
 
 type State = {
@@ -24,7 +29,8 @@ const { reducer, actions, name } = createSlice({
         isAnyOf(
           loadTodoList.pending,
           createTodoItem.pending,
-          updateTodoItem.pending
+          updateTodoItem.pending,
+          deleteTodoItem.pending
         ),
         (state: State) => {
           state.status = DataStatus.PENDING;
@@ -34,12 +40,13 @@ const { reducer, actions, name } = createSlice({
         isAnyOf(
           loadTodoList.fulfilled,
           createTodoItem.fulfilled,
-          updateTodoItem.fulfilled
+          updateTodoItem.fulfilled,
+          deleteTodoItem.fulfilled
         ),
         (state: State, action) => {
           if (loadTodoList.fulfilled.match(action)) {
             state.todoList = action.payload;
-          } else {
+          } else if (createTodoItem.fulfilled.match(action)) {
             state.todoItem = action.payload;
           }
           state.status = DataStatus.FULFILLED;
@@ -49,7 +56,8 @@ const { reducer, actions, name } = createSlice({
         isAnyOf(
           loadTodoList.rejected,
           createTodoItem.rejected,
-          updateTodoItem.rejected
+          updateTodoItem.rejected,
+          deleteTodoItem.fulfilled
         ),
         (state: State) => {
           state.status = DataStatus.REJECTED;

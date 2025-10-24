@@ -7,6 +7,7 @@ import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   createTodoItem,
+  deleteTodoItem,
   loadTodoList,
   updateTodoItem,
 } from "@/store/todo-list/actions";
@@ -35,10 +36,18 @@ export function TodoList() {
 
   const onSubmit = async (data: TodoItemCreateDto) => {
     await dispatch(createTodoItem(data));
+    await dispatch(loadTodoList());
     reset();
   };
 
-  const handleDelete = (id: number) => {};
+  const handleDelete = async (id: number) => {
+    const todo = todoList?.find((todoItem) => todoItem.id === id);
+
+    if (!todo) return;
+
+    await dispatch(deleteTodoItem(id));
+    await dispatch(loadTodoList());
+  };
 
   const handleCompled = async (id: number) => {
     const todo = todoList?.find((todoItem) => todoItem.id === id);

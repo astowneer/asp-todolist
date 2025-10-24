@@ -58,4 +58,18 @@ const updateTodoItem = createAsyncThunk<
   return result;
 });
 
-export { loadTodoList, createTodoItem, updateTodoItem };
+const deleteTodoItem = createAsyncThunk<void, number, AsyncThunkConfig>(
+  `${name}/delete-booking`,
+  async (payload, { extra, getState }) => {
+    const { todoListService } = extra;
+
+    const state = getState();
+    const authToken = state.auth.tokens?.accessToken;
+
+    if (!authToken) throw new Error("No token found");
+
+    await todoListService.delete({ id: payload, authToken });
+  }
+);
+
+export { loadTodoList, createTodoItem, updateTodoItem, deleteTodoItem };

@@ -1,10 +1,11 @@
-import { createTodoItem, loadTodoList } from "./actions";
+import { createTodoItem, deleteTodoItem, loadTodoList } from "./actions";
 import { actions, reducer } from "./slice";
 
 const allActions = {
   ...actions,
   loadTodoList,
-  createTodoItem
+  createTodoItem,
+  deleteTodoItem,
 };
 
 export { allActions as actions, reducer };
