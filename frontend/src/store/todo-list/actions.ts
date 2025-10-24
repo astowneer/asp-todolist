@@ -5,6 +5,7 @@ import {
   type AsyncThunkConfig,
   type TodoItemCreateDto,
   type TodoItemDto,
+  type TodoItemUpdateDto,
 } from "@/common/common";
 
 const loadTodoList = createAsyncThunk<TodoItemDto[], void, AsyncThunkConfig>(
@@ -40,4 +41,21 @@ const createTodoItem = createAsyncThunk<
   return result;
 });
 
-export { loadTodoList, createTodoItem };
+const updateTodoItem = createAsyncThunk<
+  TodoItemDto,
+  TodoItemUpdateDto,
+  AsyncThunkConfig
+>(`${name}/update`, async (payload, { extra, getState }) => {
+  const { todoListService } = extra;
+
+  const state = getState();
+  const authToken = state.auth.tokens?.accessToken;
+
+  if (!authToken) throw new Error("No token found");
+
+  const result = await todoListService.update({ authToken, payload });
+
+  return result;
+});
+
+export { loadTodoList, createTodoItem, updateTodoItem };

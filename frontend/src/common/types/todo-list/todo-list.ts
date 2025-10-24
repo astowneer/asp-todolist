@@ -1,5 +1,5 @@
 type TodoItemDto = {
-  id: string;
+  id: number;
   name: string;
   description: string;
   isCompleted: boolean;
@@ -11,6 +11,6 @@ type TodoItemCreateDto = {
   isCompleted: boolean;
 };
 
-type TodoItemUpdateDto = Partial<TodoItemCreateDto>;
+type TodoItemUpdateDto = { id: number } & Partial<TodoItemCreateDto>;
 
 export { type TodoItemDto, type TodoItemCreateDto, type TodoItemUpdateDto };

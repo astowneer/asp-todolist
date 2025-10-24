@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { createTodoItem, loadTodoList } from "./actions";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { createTodoItem, loadTodoList, updateTodoItem } from "./actions";
 import { DataStatus, type TodoItemDto, type ValueOf } from "@/common/common";
 
 type State = {
@@ -18,28 +18,43 @@ const { reducer, actions, name } = createSlice({
   name: "todo-list",
   initialState,
   reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(loadTodoList.pending, (state) => {
-      state.status = DataStatus.PENDING;
-    }),
-      builder.addCase(loadTodoList.fulfilled, (state, action) => {
-        state.todoList = action.payload;
-        state.status = DataStatus.FULFILLED;
-      }),
-      builder.addCase(loadTodoList.rejected, (state) => {
-        state.status = DataStatus.REJECTED;
-      });
-    builder.addCase(createTodoItem.pending, (state) => {
-      state.status = DataStatus.PENDING;
-    }),
-      builder.addCase(createTodoItem.fulfilled, (state, action) => {
-        state.todoItem = action.payload;
-        state.status = DataStatus.FULFILLED;
-      }),
-      builder.addCase(createTodoItem.rejected, (state) => {
-        state.status = DataStatus.REJECTED;
-      });
-  },
+  extraReducers: (builder) =>
+    builder
+      .addMatcher(
+        isAnyOf(
+          loadTodoList.pending,
+          createTodoItem.pending,
+          updateTodoItem.pending
+        ),
+        (state: State) => {
+          state.status = DataStatus.PENDING;
+        }
+      )
+      .addMatcher(
+        isAnyOf(
+          loadTodoList.fulfilled,
+          createTodoItem.fulfilled,
+          updateTodoItem.fulfilled
+        ),
+        (state: State, action) => {
+          if (loadTodoList.fulfilled.match(action)) {
+            state.todoList = action.payload;
+          } else {
+            state.todoItem = action.payload;
+          }
+          state.status = DataStatus.FULFILLED;
+        }
+      )
+      .addMatcher(
+        isAnyOf(
+          loadTodoList.rejected,
+          createTodoItem.rejected,
+          updateTodoItem.rejected
+        ),
+        (state: State) => {
+          state.status = DataStatus.REJECTED;
+        }
+      ),
 });
 
 export { reducer, actions, name };

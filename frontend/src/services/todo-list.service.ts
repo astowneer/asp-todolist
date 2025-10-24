@@ -5,6 +5,7 @@ import {
   HttpMethods,
   type TodoItemCreateDto,
   type TodoItemDto,
+  type TodoItemUpdateDto,
 } from "@/common/common";
 import type { Http } from "./http.service";
 
@@ -43,6 +44,21 @@ class TodoList {
   }): Promise<TodoItemDto> {
     return this.http.load(this.getUrl(ApiEndpoints.ROOT), {
       method: HttpMethods.POST,
+      contentType: ContentType.JSON,
+      payload: JSON.stringify(payload),
+      authToken,
+    });
+  }
+
+  public update({
+    authToken,
+    payload,
+  }: {
+    authToken: string;
+    payload: TodoItemUpdateDto;
+  }): Promise<TodoItemDto> {
+    return this.http.load(this.getUrl(`${ApiEndpoints.ROOT}${payload.id}`), {
+      method: HttpMethods.PATCH,
       contentType: ContentType.JSON,
       payload: JSON.stringify(payload),
       authToken,
