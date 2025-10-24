@@ -1,15 +1,8 @@
-const baseUrl = "https://localhost:7152";
+import { users } from "../../services/services";
 
 type RegisterUserDto = {
   username: string;
   password: string;
 };
 
-export const registerAction = (user: RegisterUserDto) =>
-  fetch(`${baseUrl}/api/auth/register`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json"
-    },
-    body: JSON.stringify(user)
-  });
+export const registerAction = (user: RegisterUserDto) => users.register(user);

@@ -33,11 +33,11 @@ export default function Register() {
   const onSubmit = async (data: RegisterUser) => {
     const user = { username: data.username, password: data.password };
     const response = await registerAction(user);
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error);
-    }
+    console.log("---",response);
+    // if (!response.ok) {
+    //   const error = await response.text();
+    //   throw new Error(error);
+    // }
 
     reset();
   };

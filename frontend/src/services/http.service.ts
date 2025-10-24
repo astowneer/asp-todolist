@@ -1,12 +1,12 @@
 import {
   ContentType,
   HttpHeader,
-  type HttpMethod,
+  HttpMethods,
   type ValueOf,
 } from "../common/common";
 
 type HttpOptions = {
-  method: HttpMethod;
+  method: ValueOf<typeof HttpMethods>;
   contentType: ValueOf<typeof ContentType>;
   payload: BodyInit | null;
   authToken?: string;
@@ -17,7 +17,12 @@ class Http {
     url: string,
     options: Partial<HttpOptions>
   ): Promise<T> {
-    const { method = "GET", payload = null, contentType, authToken } = options;
+    const {
+      method = HttpMethods.GET,
+      payload = null,
+      contentType,
+      authToken,
+    } = options;
 
     const headers = this.getHeaders(contentType, authToken);
 

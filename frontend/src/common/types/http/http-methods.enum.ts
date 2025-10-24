@@ -1,2 +1,9 @@
-type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-export { type HttpMethod };
+const HttpMethods = {
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+  PATCH: "PATCH",
+  DELETE: "DELETE"
+} as const;
+
+export { HttpMethods };
