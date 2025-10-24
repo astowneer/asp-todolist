@@ -1,7 +1,11 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { name } from "./slice";
-import { type AsyncThunkConfig } from "../../common/common";
+import {
+  type AsyncThunkConfig,
+  type LoginUserDto,
+  type LoginUserResponseDto,
+} from "../../common/common";
 import {
   type RegisterUserDto,
   type RegisterUserResponse,
@@ -19,4 +23,16 @@ const register = createAsyncThunk<
   return result;
 });
 
-export { register };
+const login = createAsyncThunk<
+  LoginUserResponseDto,
+  LoginUserDto,
+  AsyncThunkConfig
+>(`${name}/login`, async (payload, { extra }) => {
+  const { usersService } = extra;
+
+  const result = usersService.login(payload);
+
+  return result;
+});
+
+export { register, login };

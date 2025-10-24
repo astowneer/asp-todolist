@@ -3,6 +3,8 @@ import {
   ApiPath,
   ContentType,
   HttpMethods,
+  type LoginUserDto,
+  type LoginUserResponseDto,
   type RegisterUserDto,
   type RegisterUserResponse,
 } from "../common/common";
@@ -28,6 +30,14 @@ class Auth {
 
   public register(user: RegisterUserDto): Promise<RegisterUserResponse> {
     return this.http.load(this.getUrl(ApiEndpoints.REGISTER), {
+      method: HttpMethods.POST,
+      contentType: ContentType.JSON,
+      payload: JSON.stringify(user),
+    });
+  }
+
+  public login(user: LoginUserDto): Promise<LoginUserResponseDto> {
+    return this.http.load(this.getUrl(ApiEndpoints.LOGIN), {
       method: HttpMethods.POST,
       contentType: ContentType.JSON,
       payload: JSON.stringify(user),

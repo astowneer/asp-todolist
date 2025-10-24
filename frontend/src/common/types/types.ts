@@ -9,4 +9,6 @@ export {
   type UserDto,
   type RegisterUserDto,
   type RegisterUserResponse,
+  type LoginUserDto,
+  type LoginUserResponseDto,
 } from "./auth/auth";

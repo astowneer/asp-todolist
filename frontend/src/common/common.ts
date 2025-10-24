@@ -4,6 +4,7 @@ export {
   ENV,
   ApiEndpoints,
   DataStatus,
+  StorageKey,
 } from "./enums/enums";
 export { ApiPath, HttpHeader, HttpMethods } from "./types/types";
 export { type ValueOf } from "./utils/utils";
@@ -14,4 +15,6 @@ export {
   type UserDto,
   type RegisterUserDto,
   type RegisterUserResponse,
+  type LoginUserDto,
+  type LoginUserResponseDto,
 } from "./types/types";

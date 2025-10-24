@@ -1,6 +1,7 @@
 const ApiEndpoints = {
-  ROOT: '',
-  REGISTER: 'register',
+  ROOT: "",
+  REGISTER: "register",
+  LOGIN: "login",
 } as const;
 
 export { ApiEndpoints };

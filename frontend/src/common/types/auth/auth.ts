@@ -10,4 +10,20 @@ type RegisterUserDto = {
 
 type RegisterUserResponse = UserDto;
 
-export { type UserDto, type RegisterUserDto, type RegisterUserResponse };
+type LoginUserDto = {
+  username: string;
+  password: string;
+};
+
+type LoginUserResponseDto = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export {
+  type UserDto,
+  type RegisterUserDto,
+  type RegisterUserResponse,
+  type LoginUserDto,
+  type LoginUserResponseDto,
+};
