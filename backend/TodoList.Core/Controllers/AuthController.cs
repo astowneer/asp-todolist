@@ -34,13 +34,13 @@ public class AuthController(IAuthService authService) : ControllerBase
   [HttpPost("login")]
   public async Task<ActionResult<User>> Login(LoginUserDto request)
   {
-    var user = await authService.LoginAsync(request);
+    var result = await authService.LoginAsync(request);
 
-    if (user is null)
+    if (result is null)
     {
       return BadRequest("Invalid credentials");
     }
 
-    return Ok(user);
+    return Ok(result);
   }
 }

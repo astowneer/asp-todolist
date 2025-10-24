@@ -12,9 +12,9 @@ using TodoList.Core.Service.Contracts;
 
 namespace TodoList.Core.Services;
 
-public class AuthService(UserDbContext context) : IAuthService
+public class AuthService(UserDbContext context, IConfiguration configuration) : IAuthService
 {
-  public async Task<User?> LoginAsync(LoginUserDto request)
+  public async Task<TokenResponseDto?> LoginAsync(LoginUserDto request)
   {
     var user = await context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
@@ -28,7 +28,13 @@ public class AuthService(UserDbContext context) : IAuthService
       return null;
     }
 
-    return user;
+    var tokenResponse = new TokenResponseDto
+    {
+      User = user,
+      AccessToken = CreateToken(user)
+    };
+
+    return tokenResponse;
   }
 
   public async Task<User?> RegisterAsync(RegisterUserDto request)
@@ -49,5 +55,28 @@ public class AuthService(UserDbContext context) : IAuthService
     await context.SaveChangesAsync();
 
     return user;
+  }
+
+  private string CreateToken(User user)
+  {
+    var claims = new List<Claim>()
+    {
+      new Claim(ClaimTypes.Name, user.Username),
+      new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    };
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>("AppSettings:Token")!));
+
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
+
+    var tokenDescriptor = new JwtSecurityToken(
+      issuer: configuration.GetValue<string>("AppSettings:Issuer"),
+      audience: configuration.GetValue<string>("AppSettings:Audience"),
+      claims: claims,
+      expires: DateTime.UtcNow.AddDays(1),
+      signingCredentials: creds
+    );
+
+    return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
   }
 }

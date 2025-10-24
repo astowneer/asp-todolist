@@ -5,6 +5,6 @@ namespace TodoList.Core.Service.Contracts;
 
 public interface IAuthService
 {
-  Task<User?> LoginAsync(LoginUserDto request);
+  Task<TokenResponseDto?> LoginAsync(LoginUserDto request);
   Task<User?> RegisterAsync(RegisterUserDto request);
 }
