@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { register, login } from "./actions";
 import {
   DataStatus,
+  StorageKey,
   type LoginUserResponseDto,
   type UserDto,
 } from "../../common/common";
@@ -13,9 +14,11 @@ type State = {
   status: ValueOf<typeof DataStatus>;
 };
 
+const accessToken = localStorage.getItem(StorageKey.ACCESS_TOKEN);
+
 const initialState: State = {
   userInfo: null,
-  tokens: null,
+  tokens: accessToken ? { accessToken, refreshToken: "" } : null,
   status: DataStatus.IDLE,
 };
 

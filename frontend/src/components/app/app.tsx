@@ -8,23 +8,38 @@ import MainLayout from "../root/layout/layout";
 import { AppPath } from "../../common/common";
 import Login from "../auth/login/page";
 import Register from "../auth/register/page";
+import { ProtectedRoute } from "../protected-route/protected-route";
 
 const router = createBrowserRouter([
   {
     path: AppPath.ROOT,
-    element: <MainLayout />,
+    element: (
+      <ProtectedRoute>
+        <MainLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: AppPath.ROOT,
         element: <Main />,
       },
       {
-        path: AppPath.LOGIN,
-        element: <Login />,
+        path: AppPath.ANY,
+        element: <Navigate to={AppPath.ROOT} />,
       },
+    ],
+  },
+  {
+    path: AppPath.ROOT,
+    element: <MainLayout />,
+    children: [
       {
         path: AppPath.REGISTER,
         element: <Register />,
+      },
+      {
+        path: AppPath.LOGIN,
+        element: <Login />,
       },
       {
         path: AppPath.ANY,
