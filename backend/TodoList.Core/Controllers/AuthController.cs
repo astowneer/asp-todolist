@@ -9,37 +9,24 @@ using Microsoft.IdentityModel.Tokens;
 using TodoList.Core.Data;
 using TodoList.Core.Entities.Dtos;
 using TodoList.Core.Entities.Models;
+using TodoList.Core.Service.Contracts;
 
 namespace TodoList.Core.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
-  private readonly UserDbContext _context;
 
-  public AuthController(UserDbContext context)
-  {
-    _context = context;
-  }
-        
   [HttpPost("register")]
   public async Task<ActionResult<User>> RegisterAsync(RegisterUserDto request)
   {
-    if (await _context.Users.AnyAsync(u => u.Username == request.Username))
+    var user = await authService.RegisterAsync(request);
+
+    if (user is null)
     {
       return BadRequest("User not found");
     }
-
-    var user = new User();
-
-    var hashedPassword = new PasswordHasher<User>().HashPassword(user, request.Password);
-
-    user.Username = request.Username;
-    user.PasswordHash = hashedPassword;
-
-    _context.Users.Add(user);
-    await _context.SaveChangesAsync();
 
     return Ok(user);
   }
