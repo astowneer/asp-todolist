@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TodoList.Core.Entities.Dtos;
 using TodoList.Core.Entities.Models;
 
 namespace TodoList.Core.Controllers
@@ -21,13 +22,13 @@ namespace TodoList.Core.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoItemDto>>> GetTodoItems()
         {
-            return await _context.TodoItems.ToListAsync();
+            return await _context.TodoItems.Select(x => ItemToDto(x)).ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoItemDto>> GetTodoItem(long id)
         {
             var todoItem = await _context.TodoItems.FindAsync(id);
 
@@ -36,18 +37,26 @@ namespace TodoList.Core.Controllers
                 return NotFound();
             }
 
-            return todoItem;
+            return ItemToDto(todoItem);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<TodoItemDto>> PatchTodoItem(long id, TodoItemUpdateDto request)
         {
-            if (id != todoItem.Id)
+            if (id != request.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(todoItem).State = EntityState.Modified;
+            var todoItem = await _context.TodoItems.FindAsync(id);
+            if (todoItem == null)
+            {
+                return NotFound();
+            }
+
+            if (request.Name != null) todoItem.Name = request.Name;
+            if (request.Description != null) todoItem.Description = request.Description;
+            if (request.IsCompleted.HasValue) todoItem.IsCompleted = request.IsCompleted.Value;
 
             try
             {
@@ -65,16 +74,23 @@ namespace TodoList.Core.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(ItemToDto(todoItem));
         }
 
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        public async Task<ActionResult<TodoItemDto>> PostTodoItem(TodoItemCreateDto request)
         {
+            var todoItem = new TodoItem();
+
+            todoItem.Name = request.Name;
+            todoItem.Description = request.Description;
+            todoItem.IsCompleted = request.IsCompleted;
+            todoItem.UserId = request.UserId;
+
             _context.TodoItems.Add(todoItem);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
+            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, ItemToDto(todoItem));
         }
 
         [HttpDelete("{id}")]
@@ -96,5 +112,14 @@ namespace TodoList.Core.Controllers
         {
             return _context.TodoItems.Any(e => e.Id == id);
         }
+
+        private static TodoItemDto ItemToDto(TodoItem todoItem) =>
+            new TodoItemDto
+            {
+                Id = todoItem.Id,
+                Name = todoItem.Name,
+                IsCompleted = todoItem.IsCompleted,
+                UserId = todoItem.UserId
+            };
     }
 }
