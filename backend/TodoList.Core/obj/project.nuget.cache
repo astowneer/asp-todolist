@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Dn8f4aUSESE=",
+  "success": true,
+  "projectFilePath": "/Users/astowner/csharping-introduction/step-1/TodoApi/attemp/backend/TodoList.Core/TodoList.Core.csproj",
+  "expectedPackageFiles": [
+    "/Users/astowner/.nuget/packages/microsoft.aspnetcore.openapi/9.0.3/microsoft.aspnetcore.openapi.9.0.3.nupkg.sha512",
+    "/Users/astowner/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
