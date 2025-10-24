@@ -3,20 +3,10 @@ import {
   ApiPath,
   ContentType,
   HttpMethods,
+  type RegisterUserDto,
+  type RegisterUserResponse,
 } from "../common/common";
 import type { Http } from "./http.service";
-
-type UserDto = {
-  id: string;
-  username: string;
-};
-
-type RegisterUserDto = {
-  username: string;
-  password: string;
-};
-
-type RegisterUserResponse = UserDto;
 
 type Constructor = {
   baseUrl: string;

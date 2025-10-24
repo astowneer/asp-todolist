@@ -2,12 +2,16 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerAction } from "../../actions/auth";
+import { useAppDispatch, useAppSelector } from "../../../hooks/hooks";
+import { actions } from "../../../store/auth/auth";
 
 const registerSchema = z
   .object({
-    username: z.string({
-      error: "Username is required",
-    }).min(5, "Username should be at least 5 characters"),
+    username: z
+      .string({
+        error: "Username is required",
+      })
+      .min(5, "Username should be at least 5 characters"),
     password: z
       .string({
         error: "Password is required",
@@ -30,15 +34,11 @@ export default function Register() {
     formState: { errors },
   } = useForm<RegisterUser>({ resolver: zodResolver(registerSchema) });
 
+  const dispatch = useAppDispatch();
+
   const onSubmit = async (data: RegisterUser) => {
     const user = { username: data.username, password: data.password };
-    const response = await registerAction(user);
-    console.log("---",response);
-    // if (!response.ok) {
-    //   const error = await response.text();
-    //   throw new Error(error);
-    // }
-
+    await dispatch(actions.register(user));
     reset();
   };
 
