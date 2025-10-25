@@ -71,10 +71,9 @@ class TodoList {
   }: {
     authToken: string;
     id: number;
-  }): Promise<TodoItemDto> {
+  }): Promise<void> {
     return this.http.load(this.getUrl(`${ApiEndpoints.ROOT}${id}`), {
       method: HttpMethods.DELETE,
-      contentType: ContentType.JSON,
       authToken,
     });
   }
