@@ -1,6 +1,7 @@
 import { type TodoItemCreateDto } from "@/common/common";
-import { FormProvider, type UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
+  Form,
   FormControl,
   FormField,
   FormItem,
@@ -9,18 +10,37 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAppDispatch } from "@/hooks/use-app-dispatch";
+import { createTodoItem } from "@/store/todo-list/actions";
+import z from "zod";
 
-type Properties = {
-  form: UseFormReturn<TodoItemCreateDto>;
-  onSubmit: (data: TodoItemCreateDto) => void;
-};
+const todoItemSchema = z.object({
+  name: z.string().min(5, "Name should be at least 3 characters"),
+  description: z.string(),
+  isCompleted: z.boolean(),
+});
 
-export function CreateForm({ form, onSubmit }: Properties) {
-  const { handleSubmit } = form;
+export function CreateForm() {
+  const form = useForm<TodoItemCreateDto>({
+    resolver: zodResolver(todoItemSchema),
+    defaultValues: { name: "", description: "", isCompleted: false },
+  });
+
+  const dispatch = useAppDispatch();
+  const { handleSubmit, reset } = form;
+
+  const onSubmit = async (data: TodoItemCreateDto) => {
+    await dispatch(createTodoItem({ ...data, isCompleted: false }));
+    reset();
+  };
 
   return (
-    <FormProvider {...form}>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+    <Form {...form}>
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <FormField
           control={form.control}
           name="name"
@@ -47,8 +67,13 @@ export function CreateForm({ form, onSubmit }: Properties) {
             </FormItem>
           )}
         />
-        <Button type="submit" className="bg-amber-300 hover:bg-amber-400 text-black">Add</Button>
+        <Button
+          type="submit"
+          className="bg-amber-300 hover:bg-amber-400 text-black"
+        >
+          Add
+        </Button>
       </form>
-    </FormProvider>
+    </Form>
   );
 }
