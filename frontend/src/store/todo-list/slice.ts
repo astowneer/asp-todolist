@@ -2,6 +2,7 @@ import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import {
   createTodoItem,
   deleteTodoItem,
+  filterTodoList,
   loadTodoList,
   updateTodoItem,
 } from "./actions";
@@ -30,7 +31,8 @@ const { reducer, actions, name } = createSlice({
           loadTodoList.pending,
           createTodoItem.pending,
           updateTodoItem.pending,
-          deleteTodoItem.pending
+          deleteTodoItem.pending,
+          filterTodoList.pending
         ),
         (state: State) => {
           state.status = DataStatus.PENDING;
@@ -41,10 +43,14 @@ const { reducer, actions, name } = createSlice({
           loadTodoList.fulfilled,
           createTodoItem.fulfilled,
           updateTodoItem.fulfilled,
-          deleteTodoItem.fulfilled
+          deleteTodoItem.fulfilled,
+          filterTodoList.fulfilled
         ),
         (state: State, action) => {
-          if (loadTodoList.fulfilled.match(action)) {
+          if (
+            loadTodoList.fulfilled.match(action) ||
+            filterTodoList.fulfilled.match(action)
+          ) {
             state.todoList = action.payload;
           } else if (createTodoItem.fulfilled.match(action)) {
             state.todoItem = action.payload;
@@ -57,7 +63,8 @@ const { reducer, actions, name } = createSlice({
           loadTodoList.rejected,
           createTodoItem.rejected,
           updateTodoItem.rejected,
-          deleteTodoItem.fulfilled
+          deleteTodoItem.rejected,
+          filterTodoList.rejected
         ),
         (state: State) => {
           state.status = DataStatus.REJECTED;

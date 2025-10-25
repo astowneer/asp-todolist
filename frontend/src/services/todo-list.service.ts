@@ -79,6 +79,23 @@ class TodoList {
     });
   }
 
+  public filter({
+    authToken,
+    isCompleted,
+  }: {
+    authToken: string;
+    isCompleted: boolean;
+  }): Promise<TodoItemDto[]> {
+    return this.http.load(
+      this.getUrl(`${ApiEndpoints.ROOT}filter?isCompleted=${isCompleted}`),
+      {
+        method: HttpMethods.GET,
+        contentType: ContentType.JSON,
+        authToken,
+      }
+    );
+  }
+
   private getUrl(path = ""): string {
     return `${this.baseUrl}/${this.basePath}/${path}`;
   }

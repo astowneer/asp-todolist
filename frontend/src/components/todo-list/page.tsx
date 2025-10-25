@@ -8,6 +8,7 @@ import { useAppSelector } from "@/hooks/use-app-selector";
 import {
   createTodoItem,
   deleteTodoItem,
+  filterTodoList,
   loadTodoList,
   updateTodoItem,
 } from "@/store/todo-list/actions";
@@ -63,6 +64,16 @@ export function TodoList() {
     await dispatch(loadTodoList());
   };
 
+  const handleFilter = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+
+    if (value === "all") {
+      await dispatch(loadTodoList());
+    } else {
+      await dispatch(filterTodoList(value === "true"));
+    }
+  };
+
   const todoList = useAppSelector((state) => state.todoList.todoList);
   const status = useAppSelector((state) => state.todoList.status);
   const dispatch = useAppDispatch();
@@ -89,6 +100,11 @@ export function TodoList() {
           <button type="submit">add</button>
         </form>
       </section>
+      <select name="filter" id="filter" onChange={handleFilter}>
+        <option value="all">All</option>
+        <option value="true">Completed</option>
+        <option value="false">Not Completed</option>
+      </select>
       <section>
         {todoList?.map((todoItem) => (
           <div key={todoItem.id}>

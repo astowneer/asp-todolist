@@ -59,7 +59,7 @@ const updateTodoItem = createAsyncThunk<
 });
 
 const deleteTodoItem = createAsyncThunk<void, number, AsyncThunkConfig>(
-  `${name}/delete-booking`,
+  `${name}/delete`,
   async (payload, { extra, getState }) => {
     const { todoListService } = extra;
 
@@ -72,4 +72,30 @@ const deleteTodoItem = createAsyncThunk<void, number, AsyncThunkConfig>(
   }
 );
 
-export { loadTodoList, createTodoItem, updateTodoItem, deleteTodoItem };
+const filterTodoList = createAsyncThunk<
+  TodoItemDto[],
+  boolean,
+  AsyncThunkConfig
+>(`${name}/filter`, async (payload, { extra, getState }) => {
+  const { todoListService } = extra;
+
+  const state = getState();
+  const authToken = state.auth.tokens?.accessToken;
+
+  if (!authToken) throw new Error("No token found");
+
+  const result = await todoListService.filter({
+    authToken,
+    isCompleted: payload,
+  });
+
+  return result;
+});
+
+export {
+  loadTodoList,
+  createTodoItem,
+  updateTodoItem,
+  deleteTodoItem,
+  filterTodoList,
+};
