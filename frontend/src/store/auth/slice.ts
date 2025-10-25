@@ -25,7 +25,14 @@ const initialState: State = {
 const { reducer, actions, name } = createSlice({
   name: "users",
   initialState,
-  reducers: {},
+  reducers: {
+    signOut: (state) => {
+      state.userInfo = null;
+      state.tokens = null;
+      state.status = DataStatus.IDLE;
+      localStorage.removeItem(StorageKey.ACCESS_TOKEN);
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(register.pending, (state) => {
       state.status = DataStatus.PENDING;

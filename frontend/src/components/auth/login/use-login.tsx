@@ -27,6 +27,7 @@ export function useLogin(reset?: () => void) {
       navigate(AppPath.ROOT);
       reset?.();
     } else if (status === DataStatus.REJECTED) {
+      dispatch(actions.signOut());
       toast.error(ToastNotifications.AUTHENTICATION_FAILED);
     }
   }, [token, status]);

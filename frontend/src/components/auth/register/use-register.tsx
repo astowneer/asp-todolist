@@ -4,6 +4,7 @@ import { actions } from "../../../store/auth/auth";
 import {
   AppPath,
   DataStatus,
+  StorageKey,
   ToastNotifications,
   type RegisterUserDto,
 } from "../../../common/common";
@@ -14,8 +15,14 @@ export function useRegister(reset?: () => void) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const status = useAppSelector((state) => state.auth.status);
+  const token = useAppSelector((state) => state.auth.tokens?.accessToken);
 
   useEffect(() => {
+    if (token) {
+      navigate(AppPath.ROOT);
+      return;
+    }
+
     if (status === DataStatus.FULFILLED) {
       navigate(AppPath.LOGIN);
       reset?.();
