@@ -1,4 +1,5 @@
 import { type TodoItemDto } from "@/common/common";
+import { Button } from "../ui/button";
 
 type Properties = {
   todoItem: TodoItemDto;
@@ -22,18 +23,19 @@ export function TaskCard({
           id={`todo-${todoItem.id}`}
           checked={todoItem.isCompleted}
           onChange={() => handleCompled(todoItem.id)}
+          className="accent-amber-500"
         />
         <div>
           <div className="font-bold">{todoItem.name}</div>
-          <div>{todoItem.description}</div>
+          <div className="font-semibold">{todoItem.description}</div>
         </div>
       </label>
-      <button
-        className="mt-2 text-red-600"
+      <Button
+        className="mt-2 bg-red-500 hover:bg-red-600"
         onClick={() => handleDelete(todoItem.id)}
       >
         Delete
-      </button>
+      </Button>
     </div>
   );
 }

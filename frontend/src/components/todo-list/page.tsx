@@ -18,7 +18,7 @@ import { FilterSelect } from "./filter";
 import { TodoFilter } from "./libs/constants/constants";
 
 const todoItemSchema = z.object({
-  name: z.string().min(5, "Username should be at least 5 characters"),
+  name: z.string().min(5, "Name should be at least 3 characters"),
   description: z.string(),
   isCompleted: z.boolean(),
 });
@@ -57,20 +57,22 @@ export function TodoList() {
   }, [dispatch]);
 
   return (
-    <main className="bg-yellow-500 p-4">
-      <h1 className="text-2xl font-bold mb-4">TodoList</h1>
-      <CreateForm form={form} onSubmit={onSubmit} />
-      <FilterSelect onChange={handleFilter} />
-      <section>
-        {todoList?.map((todoItem) => (
-          <TaskCard
-            key={todoItem.id}
-            todoItem={todoItem}
-            handleCompled={handleCompled}
-            handleDelete={handleDelete}
-          />
-        ))}
-      </section>
+    <main className="p-4 w-full flex flex-col items-center justify-center min-h-screen">
+      <div className="max-w-3xl w-full space-y-5">
+        <h1 className="text-2xl font-bold mb-4">TodoList</h1>
+        <CreateForm form={form} onSubmit={onSubmit} />
+        <FilterSelect onChange={handleFilter} />
+        <section>
+          {todoList?.map((todoItem) => (
+            <TaskCard
+              key={todoItem.id}
+              todoItem={todoItem}
+              handleCompled={handleCompled}
+              handleDelete={handleDelete}
+            />
+          ))}
+        </section>
+      </div>
     </main>
   );
 }

@@ -47,7 +47,6 @@ const { reducer, actions, name } = createSlice({
           filterTodoList.fulfilled
         ),
         (state: State, action) => {
-          console.log("ACTION TYPE:", action.type, action.payload);
           if (
             loadTodoList.fulfilled.match(action) ||
             filterTodoList.fulfilled.match(action)

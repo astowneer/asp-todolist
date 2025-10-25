@@ -1,5 +1,14 @@
 import { type TodoItemCreateDto } from "@/common/common";
-import { type UseFormReturn } from "react-hook-form";
+import { FormProvider, type UseFormReturn } from "react-hook-form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
 type Properties = {
   form: UseFormReturn<TodoItemCreateDto>;
@@ -7,25 +16,39 @@ type Properties = {
 };
 
 export function CreateForm({ form, onSubmit }: Properties) {
-  const { register, handleSubmit } = form;
+  const { handleSubmit } = form;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mb-4 flex gap-2">
-      <input
-        type="text"
-        {...register("name")}
-        className="border-2 border-black p-1 flex-1"
-        placeholder="Task Name"
-      />
-      <input
-        type="text"
-        {...register("description")}
-        className="border-2 border-black p-1 flex-1"
-        placeholder="Description"
-      />
-      <button type="submit" className="bg-green-500 text-white p-1">
-        Add
-      </button>
-    </form>
+    <FormProvider {...form}>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input placeholder="name" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Input placeholder="description" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="bg-amber-300 hover:bg-amber-400 text-black">Add</Button>
+      </form>
+    </FormProvider>
   );
 }

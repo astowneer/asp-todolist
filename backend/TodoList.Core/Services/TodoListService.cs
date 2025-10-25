@@ -95,6 +95,7 @@ public class TodoListService(TodoDbContext context) : ITodoListService
       {
         Id = todo.Id,
         Name = todo.Name,
+        Description = todo.Description,
         IsCompleted = todo.IsCompleted,
         UserId = todo.UserId
       };
