@@ -83,7 +83,11 @@ export function RegisterForm() {
             </FormItem>
           )}
         />
-        <Button disabled={isPending} type="submit">
+        <Button
+          disabled={isPending}
+          type="submit"
+          className="bg-amber-400 hover:bg-amber-500 text-black"
+        >
           Register
         </Button>
       </form>
