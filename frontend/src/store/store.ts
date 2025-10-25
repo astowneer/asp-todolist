@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { rootReducer } from "./root-reducer";
-import { users as usersService } from "../services/services";
+import {
+  users as usersService,
+  todoList as todoListService,
+} from "@/services/services";
 
 export const extraArgument = {
   usersService,
+  todoListService,
 };
 
 const store = configureStore({

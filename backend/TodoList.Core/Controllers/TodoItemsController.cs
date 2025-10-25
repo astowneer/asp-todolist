@@ -56,7 +56,7 @@ namespace TodoList.Core.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTodoItem(long id)
+        public async Task<ActionResult<long>> DeleteTodoItem(long id)
         {
             var deleted = await todoService.DeleteTodoAsync(id, UserId);
 
@@ -65,7 +65,7 @@ namespace TodoList.Core.Controllers
                 return Forbid();
             }
 
-            return NoContent();
+            return id;
         }
 
         [HttpGet("filter")]
