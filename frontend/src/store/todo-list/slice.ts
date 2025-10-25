@@ -53,7 +53,17 @@ const { reducer, actions, name } = createSlice({
           ) {
             state.todoList = action.payload;
           } else if (createTodoItem.fulfilled.match(action)) {
-            state.todoItem = action.payload;
+            state.todoList = [...(state.todoList ?? []), action.payload];
+          } else if (updateTodoItem.fulfilled.match(action)) {
+            state.todoList =
+              state.todoList?.map((todoItem) =>
+                todoItem.id === action.payload.id ? action.payload : todoItem
+              ) ?? null;
+          } else if (deleteTodoItem.fulfilled.match(action)) {
+            state.todoList =
+              state.todoList?.filter(
+                (todoItem) => todoItem.id !== action.payload
+              ) ?? null;
           }
           state.status = DataStatus.FULFILLED;
         }

@@ -1,8 +1,4 @@
-import {
-  DataStatus,
-  type TodoItemCreateDto,
-  type TodoItemDto,
-} from "@/common/common";
+import { type TodoItemCreateDto } from "@/common/common";
 import { useAppDispatch } from "@/hooks/use-app-dispatch";
 import { useAppSelector } from "@/hooks/use-app-selector";
 import {
@@ -13,7 +9,7 @@ import {
   updateTodoItem,
 } from "@/store/todo-list/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
@@ -28,16 +24,12 @@ const todoItemSchema = z.object({
 });
 
 export function TodoList() {
-  const {
-    reset,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ resolver: zodResolver(todoItemSchema) });
+  const { reset, register, handleSubmit } = useForm({
+    resolver: zodResolver(todoItemSchema),
+  });
 
   const onSubmit = async (data: TodoItemCreateDto) => {
     await dispatch(createTodoItem(data));
-    await dispatch(loadTodoList());
     reset();
   };
 
@@ -47,7 +39,6 @@ export function TodoList() {
     if (!todo) return;
 
     await dispatch(deleteTodoItem(id));
-    await dispatch(loadTodoList());
   };
 
   const handleCompled = async (id: number) => {
@@ -61,7 +52,6 @@ export function TodoList() {
         isCompleted: !todo.isCompleted,
       })
     );
-    await dispatch(loadTodoList());
   };
 
   const handleFilter = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -75,7 +65,6 @@ export function TodoList() {
   };
 
   const todoList = useAppSelector((state) => state.todoList.todoList);
-  const status = useAppSelector((state) => state.todoList.status);
   const dispatch = useAppDispatch();
 
   useEffect(() => {

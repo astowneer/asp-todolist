@@ -58,7 +58,7 @@ const updateTodoItem = createAsyncThunk<
   return result;
 });
 
-const deleteTodoItem = createAsyncThunk<void, number, AsyncThunkConfig>(
+const deleteTodoItem = createAsyncThunk<number, number, AsyncThunkConfig>(
   `${name}/delete`,
   async (payload, { extra, getState }) => {
     const { todoListService } = extra;
@@ -69,6 +69,8 @@ const deleteTodoItem = createAsyncThunk<void, number, AsyncThunkConfig>(
     if (!authToken) throw new Error("No token found");
 
     await todoListService.delete({ id: payload, authToken });
+
+    return payload;
   }
 );
 
